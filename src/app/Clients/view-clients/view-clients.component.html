@@ -1,0 +1,55 @@
+<div class="container">
+    <!-- Add Client Button -->
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-end">
+            <button mat-raised-button color="primary" [routerLink]="['/create-client']">Add Client</button>
+        </div>
+    </div>
+
+    <!-- Client Cards -->
+    <div class="row">
+        <div class="col-12 mb-4" *ngFor="let client of clients">
+            <mat-card class="card w-100">
+                <mat-card-header [style.backgroundColor]="client.type === 'Commercial' ? 'lightblue' : client.type === 'Private' ? 'lightgreen' : 'inherit'" class="card-header">
+                    <mat-card-title>
+                        {{ client.name }} - {{ client.type }}
+                    </mat-card-title>
+                </mat-card-header>
+                
+                
+                <mat-card-content class="card-body p-0">
+                    <mat-accordion class="w-100 m-0">
+                        <mat-expansion-panel class="w-100 m-0">
+                            <mat-expansion-panel-header>
+                                Contacts
+                            </mat-expansion-panel-header>
+                            <mat-list class="w-100 m-0">
+                                <div *ngFor="let contact of client.contacts">
+                                    <div class="contact-detail">
+                                        <strong>Department: </strong>{{ contact.deptName }}
+                                    </div>
+                                    <div class="contact-detail">
+                                        Contact: {{ contact.contactName }}
+                                    </div>
+                                    <div class="contact-detail">
+                                        Email: {{ contact.email }}
+                                    </div>
+                                    <div class="contact-detail">
+                                        Phone: {{ contact.phone }}
+                                    </div>
+                                    <mat-divider></mat-divider>
+                                </div>
+                            </mat-list>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </mat-card-content>
+                <mat-card-actions class="card-footer d-flex justify-content-end">
+                    <ng-container *ngIf="client.id">
+                        <button mat-button (click)="editClient(client.id)">Edit</button>
+                        <button mat-button color="warn" (click)="promptRemove(client.id)">Remove</button>
+                    </ng-container>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+    </div>
+</div>

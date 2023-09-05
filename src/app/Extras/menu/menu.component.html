@@ -1,0 +1,60 @@
+<div>
+  <mat-toolbar class="top-bar">
+    <button mat-icon-button (click)="toggleSidebar()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span class="toolbar-spacer"></span>
+    <!-- Replace 'src/assets/logo.png' with the path to your logo -->
+    <img src="assets/Images/logo.png" alt="My App Logo" class="app-logo">
+    <span class="toolbar-spacer"></span>
+  </mat-toolbar>
+
+  <mat-drawer-container class="drawer-container">
+    <mat-drawer #drawer class="side-drawer" [mode]="isMobile ? 'over' : 'side'" [opened]="isSidebarOpened">
+      <mat-nav-list>
+
+        <a *ngIf="!isLoggedIn" mat-button [routerLink]="['/login']" (click)="isMobile && toggleSidebar()">Login</a>
+        <a *ngIf="!isLoggedIn" mat-button [routerLink]="['/register']"
+          (click)="isMobile && toggleSidebar()">Register</a>
+
+        <a *ngIf="isLoggedIn" mat-button [routerLink]="['']" (click)="isMobile && toggleSidebar()">Home</a>
+
+        <a *ngIf="isLoggedIn" mat-button [routerLink]="['/create-client']" (click)="isMobile && toggleSidebar()">New
+          Client</a>
+        <a *ngIf="isLoggedIn" mat-button [routerLink]="['/view-clients']"
+          (click)="isMobile && toggleSidebar()">Clients</a>
+
+        <a *ngIf="isLoggedIn" mat-button [routerLink]="['/create-quotation']" (click)="isMobile && toggleSidebar()">New
+          Quotations</a>
+        <a *ngIf="isLoggedIn" mat-button [routerLink]="['/view-quotations']"
+          (click)="isMobile && toggleSidebar()">Quotations</a>
+
+        <a *ngIf="isLoggedIn" mat-button [routerLink]="['/create-job']" (click)="isMobile && toggleSidebar()">New
+          Job</a>
+        <a *ngIf="isLoggedIn" mat-button [routerLink]="['/view-jobs']" (click)="isMobile && toggleSidebar()">Jobs</a>
+
+        <a *ngIf="isLoggedIn" mat-button [routerLink]="['/create-invoice']" (click)="isMobile && toggleSidebar()">New
+          Invoice</a>
+        <a *ngIf="isLoggedIn" mat-button [routerLink]="['/view-invoices']"
+          (click)="isMobile && toggleSidebar()">Invoices</a>
+
+        <a *ngIf="isLoggedIn" mat-button [routerLink]="['/create-job-report']" (click)="isMobile && toggleSidebar()">New
+          Job Report</a>
+        <a *ngIf="isLoggedIn" mat-button [routerLink]="['/view-job-reports']" (click)="isMobile && toggleSidebar()">Job
+          Reports</a>
+          <a *ngIf="isLoggedIn" mat-button [routerLink]="['/view-stock']" (click)="isMobile && toggleSidebar()">Stock List </a>
+        <a *ngIf="isLoggedIn" mat-button [routerLink]="['/profile']" (click)="isMobile && toggleSidebar()">Profile </a>
+
+        <a *ngIf="isLoggedIn" mat-button (click)="auth.signOut()">Log out</a>
+
+      </mat-nav-list>
+    </mat-drawer>
+
+    <mat-drawer-content class="drawer-content">
+      <!-- Content Area -->
+      <div class="content-area">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-drawer-content>
+  </mat-drawer-container>
+</div>

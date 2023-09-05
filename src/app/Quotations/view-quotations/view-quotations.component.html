@@ -1,0 +1,94 @@
+<div class="container">
+    <!-- Add Quotation Button -->
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-end">
+            <button mat-raised-button color="primary" [routerLink]="['/create-quotation']">Add Quotation</button>
+        </div>
+    </div>
+
+    <!-- Quotation Cards -->
+    <div class="row">
+        <div class="col-12 mb-4" *ngFor="let quotation of quotations">
+            <mat-card class="card w-100">
+             
+                    <mat-toolbar class="card-header" [ngClass]="{
+                        'light-orange': quotation.PDF,
+                        'light-blue': quotation.Sent,
+                        'light-green': quotation.jobId
+                      }">
+                       {{ quotation.client.name }} - {{ quotation.location }}
+                       <div fxFlex fxLayout fxLayoutAlign="flex-end">
+                        Q No: {{ quotation.quotationNo }}
+                       </div>
+                        
+                    </mat-toolbar>
+               
+    
+                <mat-card-content class="card-body p-0">
+                    <div>
+                        <strong>Date: </strong>{{ convertTimestampToDate(quotation.date) }}
+                    </div>
+                    <div>
+                        <strong>Client Contact: </strong>{{ quotation.client.contact.contactName }}
+                    </div>
+                    <div>
+                        <strong>Email: </strong>{{ quotation.client.contact.email }}
+                    </div>
+                    <div>
+                        <strong>Phone: </strong>{{ quotation.client.contact.phone }}
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div class="description-section">
+                    <strong>Description </strong>
+                    <div *ngFor="let description of quotation.descriptions">
+                        <strong>{{ description.title }}</strong>
+                        <div>{{ description.text }}</div>
+                    </div>
+                    </div>
+
+                    <mat-divider></mat-divider>
+                    <mat-accordion class="w-100 m-0">
+                        <mat-expansion-panel class="w-100 m-0">
+                            <mat-expansion-panel-header>
+                                Materials
+                            </mat-expansion-panel-header>
+                            <mat-list class="w-100 m-0">
+                                <div *ngFor="let material of quotation.materials">
+                                    <div class="material-detail">
+                                        {{ material.material }} - {{ material.quantity }} X €{{ material.price }}
+                                    </div>
+                                    <mat-divider></mat-divider>
+                                </div>
+                            </mat-list>
+                            <div>
+                                <strong>Total Materials Amount: </strong> €{{ calculateTotalMaterialsAmount(quotation) }}
+                              </div>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                    <mat-divider></mat-divider>
+                    <div>
+                        <strong>Total Excl VAT: </strong>€{{ quotation.totalExclVAT }}
+                    </div>
+                    <div>
+                        <strong>Total Incl VAT: </strong>€{{ quotation.totalInclVAT }}
+                    </div>
+                </mat-card-content>
+                <mat-card-actions class="card-footer d-flex justify-content-end" [ngClass]="{
+                    'light-orange': quotation.PDF,
+                    'light-blue': quotation.Sent,
+                    'light-green': quotation.jobId
+                  }">
+                    <button mat-button (click)="editQuotation(quotation)">Edit</button>
+                    <button mat-button color="warn" (click)="deleteQuotation(quotation.id)">Remove</button>
+                    <button mat-button *ngIf="!quotation.Sent && quotation.PDFUrl" (click)="sendEmailforQuotation(quotation)">Send</button>
+                    <button mat-button *ngIf="quotation.Sent && quotation.PDFUrl" (click)="resendEmailforQuotation(quotation)">Resend</button>
+                    <button mat-button *ngIf="!quotation.jobId" (click)="createJobFromQuotation(quotation)">Create Job</button>
+                    <button mat-button *ngIf="quotation.jobId" (click)="viewJobFromQuotation(quotation)">View Job</button>
+                    <button mat-button *ngIf="!quotation.PDF" (click)="generatePDFfromQuotation(quotation)">Generate PDF</button>
+                    <a *ngIf="quotation.PDF" [href]="quotation.PDFUrl" target="_blank" mat-raised-button color="primary">View</a>
+                    <button *ngIf="quotation.PDF" mat-raised-button color="warn" (click)="onDeletePdf(quotation)" style="margin-left: 10px;">Delete</button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+    </div>
+</div>

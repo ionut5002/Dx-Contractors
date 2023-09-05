@@ -1,0 +1,53 @@
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-end">
+            <button mat-raised-button color="primary" [routerLink]="['/create-job-report']">Add JobReport</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 mb-4" *ngFor="let jobReport of jobReports">
+            <mat-card class="card w-100">
+                <mat-toolbar class="card-header" [ngClass]="{
+                    'default-color': !jobReport.Sent,
+                    'sent-color': jobReport.Sent
+                }">
+                    {{ jobReport.client.name }} - {{ jobReport.location }}
+                </mat-toolbar>
+                <mat-card-content class="card-body p-0">
+                    <div><strong>Order Number: </strong>{{ jobReport.orderNumber }}</div>
+                    <div><strong>Vendor Number: </strong>{{ jobReport.vendorNumber }}</div>
+                    <div><strong>JobReport Number: </strong>{{ jobReport.jobReportNo }}</div>
+                    <div><strong>JobReport Type: </strong>{{ jobReport.type }}</div>
+                    <div><strong>Date: </strong>{{ convertTimestampToDate(jobReport.date) }}</div>
+                    <mat-divider></mat-divider>
+                    <div class="description-section">
+                        <strong>Items </strong>
+                        <div *ngFor="let item of jobReport.Items">
+                           <strong> {{ item.Item }} </strong><br>
+                            {{ item.description }}  - {{ item.quantity }} X €{{ item.price }}
+                        </div>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div><strong>Total Excl VAT: </strong>€{{ jobReport.totalExclVAT }}</div>
+                    <div><strong>Total Incl VAT: </strong>€{{ jobReport.totalInclVAT }}</div>
+                </mat-card-content>
+                <mat-card-actions class="card-footer d-flex justify-content-end"  [ngClass]="{
+                    'default-color': !jobReport.Sent,
+                    'sent-color': jobReport.Sent
+                }">
+                    <button mat-button (click)="editJobReport(jobReport)">Edit</button>
+                    <button mat-button color="warn" (click)="deleteJobReport(jobReport)">Remove</button>
+                    <button mat-button *ngIf="!jobReport.Sent && jobReport.PDFUrl" (click)="sendEmailforJobReport(jobReport)">Send</button>
+                    <button mat-button *ngIf="jobReport.Sent && jobReport.PDFUrl" (click)="resendEmailforJobReport(jobReport)">Resend</button>
+                    <button mat-button (click)="generatePDFfromJobReport(jobReport)">Generate PDF</button>
+                    <a *ngIf="jobReport.PDFUrl" [href]="jobReport.PDFUrl" target="_blank" mat-raised-button color="primary" >
+                        View
+                    </a>
+                    <button *ngIf="jobReport.PDFUrl" mat-raised-button color="warn" (click)="onDeletePdf(jobReport)" style="margin-left: 10px;">
+                        Delete
+                    </button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+    </div>
+</div>

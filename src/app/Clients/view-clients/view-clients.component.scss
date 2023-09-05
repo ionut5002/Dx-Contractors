@@ -1,0 +1,51 @@
+.container {
+    margin: 0 auto;
+  }
+  
+  .card {
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-header,
+  .card-footer {
+    background-color: #f5f5f5;
+  }
+  
+  .card-body {
+    padding: 0;
+  }
+  
+  .contact-detail {
+    margin-bottom: 5px;
+  }
+  
+  .mat-expansion-panel-header {
+    padding: 0 !important;
+  }
+  
+  .mat-accordion .mat-expansion-panel {
+    margin: 0;
+    border: none;
+  }
+  
+  .mat-divider {
+    margin: 10px 0;
+  }
+  
+  .mb-4 {
+    margin-bottom: 1.5rem !important;
+  }
+  
+  .w-100 {
+    width: 100% !important;
+  }
+  
+  .m-0 {
+    margin: 0 !important;
+  }
+  
+  .p-0 {
+    padding: 0 !important;
+  }
+  

@@ -1,0 +1,95 @@
+<div class="container">
+    <mat-card class="stat-card">
+      <mat-card-title>Jobs vs Invoices</mat-card-title>
+      <mat-card-content>
+        <div class="stat-row">
+          <div>Total Job Value: €{{ totalJobValue }}</div>
+          <div>Total Invoice Amount: €{{ totalInvoiceAmount }}</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+        <mat-card class="stat-card">
+            <mat-card-title>Jobs Statistics</mat-card-title>
+            <mat-card-content>
+              <div class="stat-row">
+                <div>Upcoming Jobs: {{ upcomingJobs }}</div>
+                <div>Ongoing Jobs: {{ ongoingJobs }}</div>
+                <div>Finished Jobs: {{ finishedJobs }}</div>
+              </div>
+              <div style="display: block;">
+                  <canvas baseChart
+                          [data]="jobChartData"
+                          [type]="barChartType"
+                          [options]="jobChartOptions"
+                          [legend]="false"
+                          [plugins]="barChartPlugins">
+                  </canvas>
+                </div>
+            </mat-card-content>
+          </mat-card>
+        
+          <mat-card class="stat-card">
+            <mat-card-title>Invoices Statistics</mat-card-title>
+            <mat-card-content>
+              <div class="stat-row">
+                <div>Total Invoices: {{ totalInvoices }}</div>
+                <div>Sent Invoices: {{ sentInvoices }}</div>
+                <div>Paid Invoices: {{ paidInvoices }}</div>
+              </div>
+              <div style="display: block;">
+                  <canvas baseChart
+                          [data]="invoiceChartData"
+                          [type]="barChartType"
+                          [options]="invoiceChartOptions"
+                          [legend]="false"
+                          [plugins]="barChartPlugins">
+                  </canvas>
+                </div>
+            </mat-card-content>
+          </mat-card>
+    </div>
+    <div class="col-md-6">
+        <mat-card class="stat-card">
+            <mat-card-title>Job Reports Statistics</mat-card-title>
+            <mat-card-content>
+              <div class="stat-row">
+                <div>Total Job Reports: {{ totalJobReports }}</div>
+                <div>Sent Job Reports: {{ sentJobReports }}</div>
+              </div>
+              <div style="display: block;">
+                  <canvas baseChart
+                          [data]="jobReportChartData"
+                          [type]="barChartType"
+                          [options]="jobReportChartOptions"
+                          [legend]="false"
+                          [plugins]="barChartPlugins">
+                  </canvas>
+                </div>
+            </mat-card-content>
+          </mat-card>
+        
+          <mat-card class="stat-card">
+            <mat-card-title>Quotations Statistics</mat-card-title>
+            <mat-card-content>
+              <div class="stat-row">
+                <div>Total Quotations: {{ totalQuotations }}</div>
+                <div>Accepted: {{ quotationsWithJobId }}</div>
+                <div>No Response: {{ quotationsWithoutJobId }}</div>
+              </div>
+              <div style="display: block;">
+                  <canvas baseChart
+                          [data]="quotationChartData"
+                          [type]="barChartType"
+                          [options]="quotationChartOptions"
+                          [legend]="false"
+                          [plugins]="barChartPlugins">
+                  </canvas>
+                </div>
+            </mat-card-content>
+          </mat-card>
+    </div>
+  </div>

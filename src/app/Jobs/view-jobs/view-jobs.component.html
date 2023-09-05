@@ -1,0 +1,92 @@
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-end">
+            <button mat-raised-button color="primary" [routerLink]="['/create-job']">Add Job</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 mb-4" *ngFor="let job of jobs">
+            <mat-card class="card w-100">
+                <mat-toolbar class="card-header" [ngClass]="{
+                    'before-start-date': isUpcomingJob(job.startDate),
+                    'between-dates': isOngoingJob(job.startDate, job.endDate),
+                    'past-end-date': isFinishedJob(job.endDate)
+                }">
+                    {{ job.client.name }} - {{ job.location }}
+                    <div fxFlex fxLayout fxLayoutAlign="flex-end">
+                        Q No: {{ job.quotationNo }}
+                    </div>
+                </mat-toolbar>
+                <mat-card-content class="card-body p-0">
+                    <div><strong>Start Date: </strong>{{ convertTimestampToDate(job.startDate) }}</div>
+                    <div><strong>End Date: </strong>{{ convertTimestampToDate(job.endDate) }}</div>
+                    <div><strong>Client Contact: </strong>{{ job.client.contact.contactName }}</div>
+                    <div><strong>Email: </strong>{{ job.client.contact.email }}</div>
+                    <div><strong>Phone: </strong>{{ job.client.contact.phone }}</div>
+                    <mat-divider></mat-divider>
+                    <div class="description-section">
+                        <strong>Description </strong>
+                        <div>{{ job.description }}</div>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <div><strong>Labour: </strong>{{ job.labour.men }} men, Rate: €{{ job.labour.rate }}, Total: €{{ job.labour.total }}</div>
+                    <div><strong>Logistics: </strong>{{ job.logistics }}</div>
+                    <div><strong>Mechanical/Electrical: </strong>{{ job.mecanicalelectrical }}</div>
+                    <div><strong>Vendor Number: </strong>{{ job.vendorNumber }}</div>
+                    <div><strong>Order Number: </strong>{{ job.orderNumber }}</div>
+                    <div><strong>Invoiced: </strong>{{ job.invoiced }}</div>
+                    <mat-divider></mat-divider>
+                    <div><strong>Invoices: </strong>
+                        <div *ngFor="let invoice of job.invoices; let i = index">
+                            <a *ngIf="invoice.url" [href]="invoice.url" target="_blank">Invoice#{{ i + 1 }}</a>
+                            <div *ngIf="!invoice.url"> Invoice#{{ i + 1 }} </div>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>Total Invoice Amount: </strong> €{{ calculateTotalInvoiceAmount(job) }}
+                      </div>
+                    <div><strong>Job Reports: </strong>
+                        <div *ngFor="let report of job.jobReports; let i = index">
+                            <a *ngIf="report.url" [href]="report.url" target="_blank">Job Report#{{ i + 1 }}</a>
+                            <div *ngIf="!report.url"> Job Report#{{ i + 1 }} </div>
+                        </div>
+                    </div>
+                      <div>
+                        <strong>Total Job Report Amount: </strong> €{{ calculateTotalJobReportAmount(job) }}
+                      </div>
+                    <mat-divider></mat-divider>
+                    <mat-accordion class="w-100 m-0">
+                        <mat-expansion-panel class="w-100 m-0">
+                            <mat-expansion-panel-header>
+                                Materials
+                            </mat-expansion-panel-header>
+                            <mat-list class="w-100 m-0">
+                                <div *ngFor="let material of job.materials">
+                                    <div class="material-detail">
+                                        {{ material.material }} - {{ material.quantity }} X €{{ material.price }}
+                                    </div>
+                                    <mat-divider></mat-divider>
+                                </div>
+                            </mat-list>
+                            <div>
+                                <strong>Total Materials Amount: </strong> €{{ calculateTotalMaterialsAmount(job) }}
+                              </div>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                    <mat-divider></mat-divider>
+                    <div><strong>Job Value: </strong>€{{ job.jobValue }}</div>
+                </mat-card-content>
+                <mat-card-actions class="card-footer d-flex justify-content-end" [ngClass]="{
+                    'before-start-date': isUpcomingJob(job.startDate),
+                    'between-dates': isOngoingJob(job.startDate, job.endDate),
+                    'past-end-date': isFinishedJob(job.endDate)
+                }">
+                    <button mat-button (click)="editJob(job)">Edit</button>
+                    <button mat-button color="warn" (click)="deleteJob(job)">Remove</button>
+                    <button mat-button (click)="createInvoiceFromJob(job)">Create Invoice</button>
+                    <button mat-button (click)="createJobReportFromJob(job)">Create Job Report</button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+    </div>
+</div>

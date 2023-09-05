@@ -1,0 +1,28 @@
+<mat-card *ngIf="currentUser">
+  <mat-card-header>
+    <mat-card-title>User Profile</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div fxLayout="row" fxLayoutAlign="start center" style="margin: 10px;">
+      <mat-icon fxFlex="10">person</mat-icon>
+      <div fxFlex="90">
+        <strong>Display Name:</strong>
+        {{currentUser.displayName}}
+      </div>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="start center" style="margin: 10px;">
+      <mat-icon fxFlex="10">email</mat-icon>
+      <div fxFlex="90">
+        <strong>Email:</strong>
+        {{currentUser.email}}
+      </div>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="start center" style="margin: 10px;">
+      <mat-icon fxFlex="10">work</mat-icon>
+      <div fxFlex="90">
+        <strong>Role:</strong>
+        {{currentUser.role}}
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

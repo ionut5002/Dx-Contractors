@@ -1,0 +1,30 @@
+<mat-card class="stock-card">
+    <mat-card-title>
+      Stock Items
+    </mat-card-title>
+    <mat-card-content>
+      <div class="row">
+        <div *ngFor="let item of stockItems; let i = index">
+          <mat-form-field class="w-50">
+            <mat-label>Item Name</mat-label>
+            <input matInput [(ngModel)]="item.item" placeholder="Item name">
+          </mat-form-field>
+  
+          <mat-form-field class="w-30">
+            <mat-label>Quantity</mat-label>
+            <input matInput [(ngModel)]="item.quantity" type="number" placeholder="Quantity">
+          </mat-form-field>
+  
+          <button mat-icon-button color="warn" (click)="removeItem(i)" class="w-20">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="accent" (click)="addItem()">Add Item</button>
+      <button mat-raised-button color="primary" (click)="updateStock()" style="margin-left: 10px;">Update Stock</button>
+      <button mat-raised-button color="warn" [routerLink]="['']" style="margin-left: 10px;">Cancel</button>
+    </mat-card-actions>
+  </mat-card>
+  

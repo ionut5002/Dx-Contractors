@@ -1,0 +1,101 @@
+{
+  "configVersion": 1,
+  "timestamp": 1693928544430,
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/favicon.ico",
+        "/index.html",
+        "/main.e85660e32bc3c19a.js",
+        "/manifest.webmanifest",
+        "/polyfills.8924aedcb8c2f0b3.js",
+        "/runtime.600158470b78e700.js",
+        "/styles.6b8864be761c43bf.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/assets/Images/DX-logo.png",
+        "/assets/Images/logo.png",
+        "/assets/icon/icon-128x128.jpg",
+        "/assets/icon/icon-144x144.jpg",
+        "/assets/icon/icon-152x152.jpg",
+        "/assets/icon/icon-192x192.jpg",
+        "/assets/icon/icon-384x384.jpg",
+        "/assets/icon/icon-512x512.jpg",
+        "/assets/icon/icon-72x72.jpg",
+        "/assets/icon/icon-96x96.jpg",
+        "/assets/icons/icon-128x128.jpg",
+        "/assets/icons/icon-144x144.jpg",
+        "/assets/icons/icon-152x152.jpg",
+        "/assets/icons/icon-192x192.jpg",
+        "/assets/icons/icon-384x384.jpg",
+        "/assets/icons/icon-512x512.jpg",
+        "/assets/icons/icon-72x72.jpg",
+        "/assets/icons/icon-96x96.jpg"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [],
+  "hashTable": {
+    "/assets/Images/DX-logo.png": "5159032643b4dd5951b0468dad923f7406f27ba5",
+    "/assets/Images/logo.png": "289def91a8ee29d0b3299cda1bedf8821c90d84d",
+    "/assets/icon/icon-128x128.jpg": "399a38d56ca206a03209f9489988736c4ee71bc2",
+    "/assets/icon/icon-144x144.jpg": "399a38d56ca206a03209f9489988736c4ee71bc2",
+    "/assets/icon/icon-152x152.jpg": "399a38d56ca206a03209f9489988736c4ee71bc2",
+    "/assets/icon/icon-192x192.jpg": "399a38d56ca206a03209f9489988736c4ee71bc2",
+    "/assets/icon/icon-384x384.jpg": "399a38d56ca206a03209f9489988736c4ee71bc2",
+    "/assets/icon/icon-512x512.jpg": "399a38d56ca206a03209f9489988736c4ee71bc2",
+    "/assets/icon/icon-72x72.jpg": "399a38d56ca206a03209f9489988736c4ee71bc2",
+    "/assets/icon/icon-96x96.jpg": "399a38d56ca206a03209f9489988736c4ee71bc2",
+    "/assets/icons/icon-128x128.jpg": "399a38d56ca206a03209f9489988736c4ee71bc2",
+    "/assets/icons/icon-144x144.jpg": "399a38d56ca206a03209f9489988736c4ee71bc2",
+    "/assets/icons/icon-152x152.jpg": "399a38d56ca206a03209f9489988736c4ee71bc2",
+    "/assets/icons/icon-192x192.jpg": "399a38d56ca206a03209f9489988736c4ee71bc2",
+    "/assets/icons/icon-384x384.jpg": "399a38d56ca206a03209f9489988736c4ee71bc2",
+    "/assets/icons/icon-512x512.jpg": "399a38d56ca206a03209f9489988736c4ee71bc2",
+    "/assets/icons/icon-72x72.jpg": "399a38d56ca206a03209f9489988736c4ee71bc2",
+    "/assets/icons/icon-96x96.jpg": "399a38d56ca206a03209f9489988736c4ee71bc2",
+    "/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
+    "/index.html": "a95167a75fdd68c719e2775a6bdcb02fd13989ff",
+    "/main.e85660e32bc3c19a.js": "73395fa25c566872e8e0b5c02213b2656b63c5e4",
+    "/manifest.webmanifest": "5f1f649f190d9bae98839c8fe198c358d76f478d",
+    "/polyfills.8924aedcb8c2f0b3.js": "d1d9d16cbcaa19a0f6e9c8fb30d615fcb9d38cce",
+    "/runtime.600158470b78e700.js": "49abecc3e0246c69504827edbd2d7140b27a0f4b",
+    "/styles.6b8864be761c43bf.css": "463bf6e6101729da485020005417856d278937a8"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}

@@ -1,0 +1,66 @@
+<mat-card class="card">
+  <mat-card-title class="card-header">
+    {{ isEditMode ? 'Edit Client' : 'Create Client' }}
+  </mat-card-title>
+  <mat-card-content class="card-body">
+    <form [formGroup]="clientForm" (ngSubmit)="saveClient()" class="form">
+      <div class="row">
+        <div class="col-md-5 col-12 mb-3">
+          <mat-form-field class="w-100">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" placeholder="Client Name">
+          </mat-form-field>
+        </div>
+        <div class="col-md-5 col-12 mb-3">
+          <mat-form-field class="w-100">
+            <mat-label>Type</mat-label>
+            <mat-select formControlName="type">
+              <mat-option value="Commercial">Commercial</mat-option>
+              <mat-option value="Private">Private</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-md-2 col-12 mb-3 d-flex align-items-end">
+          <button mat-raised-button color="primary" (click)="addContact()">Add Contact</button>
+        </div>
+      </div>
+
+      <div formArrayName="contacts" *ngFor="let contactCtrl of contacts.controls; let i = index">
+        <div [formGroupName]="i" class="row mb-3">
+          <div class="col-md-3 col-12 mb-3">
+            <mat-form-field class="w-100">
+              <mat-label>Department Name</mat-label>
+              <input matInput formControlName="deptName" placeholder="Department Name">
+            </mat-form-field>
+          </div>
+          <div class="col-md-3 col-12 mb-3">
+            <mat-form-field class="w-100">
+              <mat-label>Contact Name</mat-label>
+              <input matInput formControlName="contactName" placeholder="Contact Name">
+            </mat-form-field>
+          </div>
+          <div class="col-md-3 col-12 mb-3">
+            <mat-form-field class="w-100">
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email" placeholder="Email">
+            </mat-form-field>
+          </div>
+          <div class="col-md-2 col-12 mb-3">
+            <mat-form-field class="w-100">
+              <mat-label>Phone</mat-label>
+              <input matInput formControlName="phone" placeholder="Phone">
+            </mat-form-field>
+          </div>
+          <div class="col-md-1 col-12 mb-3 d-flex align-items-end">
+            <button mat-icon-button color="warn" (click)="removeContact(i)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="clientForm.invalid">Save</button>
+      <button mat-raised-button color="warn" type="button" [routerLink]="['/view-clients']" style="margin-left: 20px;">Cancel</button>
+    </form>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "dx-contractors": {
+      "hosting": {
+        "DX-Contractors": [
+          "dx-contractors"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "dx-contractors"
+  }
+}
