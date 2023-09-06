@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'src/app/Extras/confirmation-dialog/confirmation-dialog.component';
 import { Timestamp } from 'firebase/firestore';
 import { SharedService } from 'src/app/Extras/shared.service';
+import { Client } from 'src/app/Clients/client';
 
 
 @Component({
@@ -15,6 +16,10 @@ import { SharedService } from 'src/app/Extras/shared.service';
 })
 export class ViewJobsComponent implements OnInit {
     jobs: Job[] = [];
+    locationFilter: string = '';
+    selectedClientName?: string;
+    isCommercial: boolean = true;
+    clients: Client[] = []
 
     constructor(private jobService: JobService, private router: Router, private dialog: MatDialog, private sharedService: SharedService) { }
 
@@ -22,6 +27,9 @@ export class ViewJobsComponent implements OnInit {
         this.sharedService.getJobs().subscribe(data => {
             this.jobs = data;
         });
+        this.sharedService.getClients().subscribe(data => {
+          this.clients = data
+      })
     }
 
     editJob(job: Job): void {
@@ -127,6 +135,26 @@ export class ViewJobsComponent implements OnInit {
           return job.materials.reduce((total, material) => total + (material.price*material.quantity), 0);
         }
         return 0;
+      }
+
+      filterJobs(job: Job) {
+        let locationMatch = true;
+        let clientNameMatch = true;
+        let clientTypeMatch = true;
+      
+        if (this.locationFilter) {
+          locationMatch = job.location.includes(this.locationFilter);
+        }
+      
+        if (this.selectedClientName) {
+          clientNameMatch = job.client.name === this.selectedClientName;
+        }
+      
+        if (this.isCommercial !== null) {
+          clientTypeMatch = this.isCommercial ? job.client.type === 'Commercial' : job.client.type === 'Private';
+        }
+      
+        return locationMatch && clientNameMatch && clientTypeMatch;
       }
 
       

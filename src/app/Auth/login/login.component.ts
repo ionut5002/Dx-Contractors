@@ -10,6 +10,7 @@ export class LoginComponent {
   email: string = '';
   password: string = '';
   error: unknown;
+  hide = true;
 
   constructor(private authService: AuthService) {}
 

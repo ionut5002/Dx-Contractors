@@ -1,3 +1,40 @@
+<!-- Filters Section -->
+<div class="row justify-content-center mb-4">
+    <div class="col-12 d-flex justify-content-center">
+        <div class="filter-container">
+            <div class="row justify-content-center">
+                <!-- Wrapper for first two filters -->
+                <div class="col-lg-4 col-6 d-flex align-items-center justify-content-center">
+                    <!-- Location Filter -->
+                    <mat-form-field appearance="outline" class="mx-2 w-100">
+                        <mat-label>Location</mat-label>
+                        <input matInput [(ngModel)]="locationFilter" placeholder="Enter location">
+                    </mat-form-field>
+                </div>
+                <div class="col-lg-4 col-6 d-flex align-items-center justify-content-center">
+                    <!-- Client Name Filter -->
+                    <mat-form-field appearance="outline" class="mx-2 w-100">
+                        <mat-label>Client Name</mat-label>
+                        <mat-select [(value)]="selectedClientName">
+                            <mat-option *ngFor="let client of clients" [value]="client.name">
+                                {{client.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <!-- Client Type Toggle -->
+                <div class="col-lg-4 col-12 d-flex align-items-center justify-content-lg-center justify-content-start mt-lg-0 mt-2">
+                    <div class="mx-2">
+                        <mat-slide-toggle [(ngModel)]="isCommercial" labelPosition="before">
+                            {{ isCommercial ? 'Commercial' : 'Private' }}
+                        </mat-slide-toggle>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container">
     <div class="row mb-4">
         <div class="col-12 d-flex justify-content-end">
@@ -5,22 +42,24 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-12 mb-4" *ngFor="let job of jobs">
+        <div class="col-12 mb-4" *ngFor="let job of jobs | orderBy:'startDate':'asc'">
+            <div *ngIf="filterJobs(job)">
             <mat-card class="card w-100">
-                <mat-toolbar class="card-header" [ngClass]="{
+                <mat-toolbar class="card-header" fxLayout="row wrap" fxLayoutAlign.xs="center center" [ngClass]="{
                     'before-start-date': isUpcomingJob(job.startDate),
                     'between-dates': isOngoingJob(job.startDate, job.endDate),
                     'past-end-date': isFinishedJob(job.endDate)
                 }">
-                    {{ job.client.name }} - {{ job.location }}
-                    <div fxFlex fxLayout fxLayoutAlign="flex-end">
+                    {{ job.location }}
+                    <div fxFlex fxLayout fxLayoutAlign="flex-end" fxLayoutAlign.xs="center center">
                         Q No: {{ job.quotationNo }}
                     </div>
                 </mat-toolbar>
                 <mat-card-content class="card-body p-0">
                     <div><strong>Start Date: </strong>{{ convertTimestampToDate(job.startDate) }}</div>
                     <div><strong>End Date: </strong>{{ convertTimestampToDate(job.endDate) }}</div>
-                    <div><strong>Client Contact: </strong>{{ job.client.contact.contactName }}</div>
+                    <div><strong>Client: </strong>{{ job.client.name }}</div>
+                    <div><strong>Contact: </strong>{{ job.client.contact.contactName }}</div>
                     <div><strong>Email: </strong>{{ job.client.contact.email }}</div>
                     <div><strong>Phone: </strong>{{ job.client.contact.phone }}</div>
                     <mat-divider></mat-divider>
@@ -34,6 +73,8 @@
                     <div><strong>Mechanical/Electrical: </strong>{{ job.mecanicalelectrical }}</div>
                     <div><strong>Vendor Number: </strong>{{ job.vendorNumber }}</div>
                     <div><strong>Order Number: </strong>{{ job.orderNumber }}</div>
+                    <div><strong>CreatedBy: </strong>{{ job.CreatedBy }}</div>
+                    <div><strong>CreatedDate: </strong>{{ convertTimestampToDate(job.CreatedDate) }}</div>
                     <div><strong>Invoiced: </strong>{{ job.invoiced }}</div>
                     <mat-divider></mat-divider>
                     <div><strong>Invoices: </strong>
@@ -84,9 +125,10 @@
                     <button mat-button (click)="editJob(job)">Edit</button>
                     <button mat-button color="warn" (click)="deleteJob(job)">Remove</button>
                     <button mat-button (click)="createInvoiceFromJob(job)">Create Invoice</button>
-                    <button mat-button (click)="createJobReportFromJob(job)">Create Job Report</button>
+                    <button mat-button (click)="createJobReportFromJob(job)">Create JobReport</button>
                 </mat-card-actions>
             </mat-card>
+        </div>
         </div>
     </div>
 </div>

@@ -28,4 +28,6 @@ export interface Quotation {
     PDF: boolean;
     Sent: boolean;
     PDFUrl: string;
+    CreatedBy: string;
+    CreatedDate: Date;
 }

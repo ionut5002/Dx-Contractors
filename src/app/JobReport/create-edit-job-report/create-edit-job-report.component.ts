@@ -7,6 +7,11 @@ import { PDFGeneratorService } from 'src/app/Extras/pdf-generator.service';
 import { JobReport } from '../job-report.model';
 import { JobReportService } from '../job-report.service';
 import { SharedService } from 'src/app/Extras/shared.service';
+import { Timestamp } from 'firebase/firestore';
+import { MatDialog } from '@angular/material/dialog';
+import { FilesUploadComponent } from 'src/app/Extras/files-upload/files-upload.component';
+import { ConfirmationDialogComponent } from 'src/app/Extras/confirmation-dialog/confirmation-dialog.component';
+import { FilesService } from 'src/app/Extras/files.service';
 
 @Component({
   selector: 'app-create-edit-job-report',
@@ -17,6 +22,10 @@ export class CreateEditJobReportComponent {
   jobReportForm!: FormGroup;
   isEditMode = false;
   clients: Client[] = [];
+  files: Array<{
+    fileName: string;
+    fileURL: string
+  }> = []
 
   constructor(
     private fb: FormBuilder,
@@ -25,7 +34,9 @@ export class CreateEditJobReportComponent {
     private jobReportService: JobReportService,
     private clientService: ClientService,
     private pdfService: PDFGeneratorService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    public dialog: MatDialog,
+    private filesService: FilesService
   ) {
     this.initializeForm();
     const navigation = this.router.getCurrentNavigation();
@@ -37,25 +48,26 @@ export class CreateEditJobReportComponent {
         this.isEditMode = true;
         if (jobReport.PDF) {
           jobReport.PDFUrl = '';
-        jobReport.PDF = false;
-        jobReport.Sent = false;
-        this.pdfService.removeJobReportPdf(jobReport)
+          jobReport.PDF = false;
+          jobReport.Sent = false;
+          this.pdfService.removeJobReportPdf(jobReport)
         }
         this.jobReportForm.patchValue({
           ...jobReport,
           date: new Date((jobReport.date as any).seconds * 1000),
           client: jobReport.client.contact.deptName
         });
+        this.files = jobReport.files
         jobReport.Items.forEach(item => {
           const itemGroup = this.fb.group(item);
           this.items.push(itemGroup);
           itemGroup.valueChanges.subscribe(() => {
             this.computeTotals();
+          });
         });
-        });
-        
+
         this.computeTotals();
-        
+
       } else {
         const jobReport = state.data;
         this.jobReportForm.patchValue({
@@ -66,7 +78,8 @@ export class CreateEditJobReportComponent {
           vendorNumber: jobReport.orderNumber,
           jobId: jobReport.jobId
         });
-        
+        this.files = jobReport.files
+
       }
 
     }
@@ -75,6 +88,15 @@ export class CreateEditJobReportComponent {
   ngOnInit(): void {
     this.sharedService.getClients().subscribe(clients => {
       this.clients = clients;
+    });
+    this.sharedService.getUser().subscribe((user: any) => {
+      if (user) {
+        this.jobReportForm.patchValue({
+          CreatedBy: user[0].displayName,
+          CreatedDate: Timestamp.now()
+
+        });
+      }
     });
   }
 
@@ -94,6 +116,9 @@ export class CreateEditJobReportComponent {
       orderNumber: [''],
       vendorNumber: [''],
       type: ['', Validators.required],
+      CreatedBy: [''],
+      CreatedDate: [''],
+      files: []
     });
   }
 
@@ -136,6 +161,9 @@ export class CreateEditJobReportComponent {
         }
       }
     }
+    this.jobReportForm.patchValue({
+      files: this.files
+    });
     if (this.isEditMode) {
       const id = this.route.snapshot.paramMap.get('id');
       if (id) {
@@ -152,4 +180,37 @@ export class CreateEditJobReportComponent {
     this.items.removeAt(index);
     this.computeTotals();
   }
+
+  openUploadDialog(): void {
+    const dialogRef = this.dialog.open(FilesUploadComponent, {
+      data: { type: 'JobReportFiles' }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      result.forEach((element: any) => {
+        this.files.push(element)
+      });
+    });
+  }
+
+  async onDeletePdf(fileName: string, type: 'JobReportFiles'): Promise<void> {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent);
+    dialogRef.afterClosed().subscribe(async result => {
+      if (result === true) {
+        try {
+          await this.filesService.removeFile(fileName, type);
+          const index = this.files.findIndex(file => file.fileName === fileName);
+          if (index > -1) {
+            this.files.splice(index, 1);
+          }
+          console.log('File removed successfully');
+        } catch (error) {
+          console.error('Error removing file:', error);
+        }
+      }
+    });
+  }
+
+
+
 }

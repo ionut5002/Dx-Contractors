@@ -1,3 +1,40 @@
+<!-- Filters Section -->
+<div class="row justify-content-center mb-4">
+    <div class="col-12 d-flex justify-content-center">
+        <div class="filter-container">
+            <div class="row justify-content-center">
+                <!-- Wrapper for first two filters -->
+                <div class="col-lg-4 col-6 d-flex align-items-center justify-content-center">
+                    <!-- Location Filter -->
+                    <mat-form-field appearance="outline" class="mx-2 w-100">
+                        <mat-label>Location</mat-label>
+                        <input matInput [(ngModel)]="locationFilter" placeholder="Enter location">
+                    </mat-form-field>
+                </div>
+                <div class="col-lg-4 col-6 d-flex align-items-center justify-content-center">
+                    <!-- Client Name Filter -->
+                    <mat-form-field appearance="outline" class="mx-2 w-100">
+                        <mat-label>Client Name</mat-label>
+                        <mat-select [(value)]="selectedClientName">
+                            <mat-option *ngFor="let client of clients" [value]="client.name">
+                                {{client.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <!-- Client Type Toggle -->
+                <div class="col-lg-4 col-12 d-flex align-items-center justify-content-lg-center justify-content-start mt-lg-0 mt-2">
+                    <div class="mx-2">
+                        <mat-slide-toggle [(ngModel)]="isCommercial" labelPosition="before">
+                            {{ isCommercial ? 'Commercial' : 'Private' }}
+                        </mat-slide-toggle>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container">
     <div class="row mb-4">
         <div class="col-12 d-flex justify-content-end">
@@ -5,21 +42,32 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-12 mb-4" *ngFor="let invoice of invoices">
+        <div class="col-12 mb-4" *ngFor="let invoice of invoices | orderBy:'date':'asc'" >
+            <div *ngIf="filterInvoices(invoice)">
             <mat-card class="card w-100">
-                <mat-toolbar class="card-header" [ngClass]="{
+                <mat-toolbar class="card-header" fxLayout="row wrap" fxLayoutAlign.xs="center center" [ngClass]="{
                     'default-color': !invoice.Sent && !invoice.Paid,
                     'sent-color': invoice.Sent && !invoice.Paid,
                     'paid-color': invoice.Paid
                 }">
-                    {{ invoice.client.name }} - {{ invoice.location }}
+                    {{ invoice.location }}
+                    <div fxFlex fxLayout fxLayoutAlign="flex-end" fxLayoutAlign.xs="center center">
+                        Inv No: {{ invoice.invoiceNo }}
+                    </div>
                 </mat-toolbar>
                 <mat-card-content class="card-body p-0">
+                    <div><strong>Client: </strong>{{ invoice.client.name }}</div>
+                    <div><strong>Contact: </strong>{{ invoice.client.contact.contactName }}</div>
+                    <div><strong>Email: </strong>{{ invoice.client.contact.email }}</div>
+                    <div><strong>Phone: </strong>{{ invoice.client.contact.phone }}</div>
                     <div><strong>Order Number: </strong>{{ invoice.orderNumber }}</div>
                     <div><strong>Vendor Number: </strong>{{ invoice.vendorNumber }}</div>
-                    <div><strong>Invoice Number: </strong>{{ invoice.invoiceNo }}</div>
                     <div><strong>Invoice Type: </strong>{{ invoice.type }}</div>
                     <div><strong>Date: </strong>{{ convertTimestampToDate(invoice.date) }}</div>
+
+
+                    <div><strong>CreatedBy: </strong>{{ invoice.CreatedBy }}</div>
+                    <div><strong>CreatedDate: </strong>{{ convertTimestampToDate(invoice.CreatedDate) }}</div>
                     <mat-divider></mat-divider>
                     <div class="description-section">
                         <strong>Items </strong>
@@ -37,6 +85,7 @@
                     'sent-color': invoice.Sent && !invoice.Paid,
                     'paid-color': invoice.Paid
                 }">
+                <div fxFlex fxLayout="row wrap" fxLayoutAlign.gt-xs="end center" fxLayoutAlign.xs="center center" fxLayoutGap="10px">
                     <button mat-button (click)="editInvoice(invoice)">Edit</button>
                     <button mat-button color="warn" (click)="deleteInvoice(invoice)">Remove</button>
                     <button mat-button *ngIf="!invoice.Sent && invoice.PDFUrl" (click)="sendEmailforInvoice(invoice)">Send</button>
@@ -48,8 +97,10 @@
                     <button *ngIf="invoice.PDFUrl" mat-raised-button color="warn" (click)="onDeletePdf(invoice)" style="margin-left: 10px;">
                         Delete
                     </button>
+                    </div>
                 </mat-card-actions>
             </mat-card>
+            </div>
         </div>
     </div>
 </div>

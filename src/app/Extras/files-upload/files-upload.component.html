@@ -1,0 +1,17 @@
+<mat-dialog-content>
+  <h1 mat-dialog-title>Upload Files</h1>
+  <div class="file-input-wrapper">
+    <button mat-raised-button color="primary" (click)="fileInput.click()" [disabled]="!uploadProgress$">Choose File</button>
+    <input hidden #fileInput type="file" (change)="handleFileInput($event)" multiple>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <mat-progress-bar *ngIf="uploadProgress$ | async as progress"
+                    mode="determinate"
+                    [value]="progress">
+  </mat-progress-bar>
+
+  <button mat-button (click)="onClose()">Close</button>
+  <button mat-button (click)="onConfirm()" [disabled]="!isUploadComplete">Confirm</button>
+</mat-dialog-actions>

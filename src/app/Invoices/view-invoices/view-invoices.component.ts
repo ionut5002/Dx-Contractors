@@ -8,6 +8,7 @@ import { PDFGeneratorService } from 'src/app/Extras/pdf-generator.service';
 import { JobService } from 'src/app/Jobs/job.service';
 import { SharedService } from 'src/app/Extras/shared.service';
 import { EmailService } from 'src/app/Extras/email.service';
+import { Client } from 'src/app/Clients/client';
 
 @Component({
     selector: 'app-view-invoices',
@@ -16,6 +17,10 @@ import { EmailService } from 'src/app/Extras/email.service';
 })
 export class ViewInvoicesComponent implements OnInit {
     invoices: Invoice[] = [];
+    locationFilter: string = '';
+    selectedClientName?: string;
+    isCommercial: boolean = true;
+    clients: Client[] = []
 
     constructor(private invoiceService: InvoiceService,
         private router: Router,
@@ -28,6 +33,9 @@ export class ViewInvoicesComponent implements OnInit {
         this.sharedService.getInvoices().subscribe(data => {
             this.invoices = data;
         });
+        this.sharedService.getClients().subscribe(data => {
+            this.clients = data
+        })
     }
 
     editInvoice(invoice: Invoice): void {
@@ -79,5 +87,25 @@ export class ViewInvoicesComponent implements OnInit {
     resendEmailforInvoice(invoice: Invoice): void {
         this.emailService.resendInvoiceEmail(invoice).subscribe(res => {
         })
+    }
+
+    filterInvoices(invoice: Invoice) {
+        let locationMatch = true;
+        let clientNameMatch = true;
+        let clientTypeMatch = true;
+
+        if (this.locationFilter) {
+            locationMatch = invoice.location.includes(this.locationFilter);
+        }
+
+        if (this.selectedClientName) {
+            clientNameMatch = invoice.client.name === this.selectedClientName;
+        }
+
+        if (this.isCommercial !== null) {
+            clientTypeMatch = this.isCommercial ? invoice.client.type === 'Commercial' : invoice.client.type === 'Private';
+        }
+
+        return locationMatch && clientNameMatch && clientTypeMatch;
     }
 }

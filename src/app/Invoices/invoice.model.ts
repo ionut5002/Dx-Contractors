@@ -13,7 +13,7 @@ export interface Invoice {
     location: string;
     invoiceNo: string;
     date: Date;
-    orderNumber:  string;
+    orderNumber: string;
     vendorNumber: string;
     Items: Array<{
         Item: string;
@@ -29,4 +29,6 @@ export interface Invoice {
     Paid: boolean;
     PDFUrl: string;
     type: string;
+    CreatedBy: string;
+    CreatedDate: Date;
 }

@@ -8,6 +8,8 @@ import { JobReportService } from '../JobReport/job-report.service';
 import { ClientService } from '../Clients/client.service';
 import { AuthService } from '../Auth/auth.service';
 import { User } from '../Auth/user';
+import { Storage, ref, uploadBytesResumable, getDownloadURL } from '@angular/fire/storage';
+import { inject } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +21,8 @@ export class SharedService {
   private jobReportsSubject = new BehaviorSubject<any[]>([]);
   private clientsSubject = new BehaviorSubject<any[]>([]);
   private usersSubject = new BehaviorSubject<any[]>([]);
+  private userSubject = new BehaviorSubject<any>({});
+  private readonly storage: Storage = inject(Storage);
 
   constructor(private jobService: JobService, 
     private quotationService: QuotationService, 
@@ -92,6 +96,56 @@ fetchUsers(): void {
 
 getUsers(): Observable<User[]> {
   return this.usersSubject.asObservable();
+}
+
+// Current User
+fetchUser(): void {
+  this.authService.getUser().subscribe(data => {
+    this.usersSubject.next(data);
+  });
+}
+
+getUser(): Observable<User[]> {
+  return this.usersSubject.asObservable();
+}
+
+uploadFile(jobReportId: string, file: File): Observable<string> {
+  const randomString = this.generateRandomString();
+  const filePath = `JobReportFiles/${randomString}_${file.name}`;
+  const storageRef = ref(this.storage, filePath);
+
+  // Upload the file and get the download URL
+  const uploadTask = uploadBytesResumable(storageRef, file);
+
+  return new Observable<any>(observer => {
+    uploadTask.on('state_changed',
+      snapshot => {
+        // Handle progress
+      },
+      error => {
+        observer.error(error);
+      },
+      async () => {
+        // Get download URL
+        await getDownloadURL(storageRef).then(url => {
+          observer.next({url: url, fileName: `${randomString}_${file.name}`});
+          observer.complete();
+        });
+      }
+    );
+  });
+}
+
+generateRandomString(): string {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  const charactersLength = characters.length;
+
+  for (let i = 0; i < 6; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+
+  return result;
 }
 
 }

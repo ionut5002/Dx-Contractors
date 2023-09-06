@@ -34,5 +34,7 @@ export interface Job {
     orderNumber:  string;
     vendorNumber: string;
     jobReports: Array<{id: string, url: string, amount: number}>;
+    CreatedBy: string;
+    CreatedDate: Date;
 
 }

@@ -1,3 +1,40 @@
+<!-- Filters Section -->
+<div class="row justify-content-center mb-4">
+    <div class="col-12 d-flex justify-content-center">
+        <div class="filter-container">
+            <div class="row justify-content-center">
+                <!-- Wrapper for first two filters -->
+                <div class="col-lg-4 col-6 d-flex align-items-center justify-content-center">
+                    <!-- Location Filter -->
+                    <mat-form-field appearance="outline" class="mx-2 w-100">
+                        <mat-label>Location</mat-label>
+                        <input matInput [(ngModel)]="locationFilter" placeholder="Enter location">
+                    </mat-form-field>
+                </div>
+                <div class="col-lg-4 col-6 d-flex align-items-center justify-content-center">
+                    <!-- Client Name Filter -->
+                    <mat-form-field appearance="outline" class="mx-2 w-100">
+                        <mat-label>Client Name</mat-label>
+                        <mat-select [(value)]="selectedClientName">
+                            <mat-option *ngFor="let client of clients" [value]="client.name">
+                                {{client.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <!-- Client Type Toggle -->
+                <div class="col-lg-4 col-12 d-flex align-items-center justify-content-lg-center justify-content-start mt-lg-0 mt-2">
+                    <div class="mx-2">
+                        <mat-slide-toggle [(ngModel)]="isCommercial" labelPosition="before">
+                            {{ isCommercial ? 'Commercial' : 'Private' }}
+                        </mat-slide-toggle>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container">
     <!-- Add Quotation Button -->
     <div class="row mb-4">
@@ -8,16 +45,17 @@
 
     <!-- Quotation Cards -->
     <div class="row">
-        <div class="col-12 mb-4" *ngFor="let quotation of quotations">
+        <div class="col-12 mb-4" *ngFor="let quotation of quotations | orderBy:'date':'asc'">
+            <div *ngIf="filterQuotations(quotation)">
             <mat-card class="card w-100">
              
-                    <mat-toolbar class="card-header" [ngClass]="{
+                    <mat-toolbar class="card-header" fxLayout="row wrap" fxLayoutAlign.xs="center center" [ngClass]="{
                         'light-orange': quotation.PDF,
                         'light-blue': quotation.Sent,
                         'light-green': quotation.jobId
                       }">
-                       {{ quotation.client.name }} - {{ quotation.location }}
-                       <div fxFlex fxLayout fxLayoutAlign="flex-end">
+                       {{ quotation.location }}
+                       <div fxFlex fxLayout fxLayoutAlign="flex-end" fxLayoutAlign.xs="center center">
                         Q No: {{ quotation.quotationNo }}
                        </div>
                         
@@ -28,8 +66,9 @@
                     <div>
                         <strong>Date: </strong>{{ convertTimestampToDate(quotation.date) }}
                     </div>
+                    <div><strong>Client: </strong>{{ quotation.client.name }}</div>
                     <div>
-                        <strong>Client Contact: </strong>{{ quotation.client.contact.contactName }}
+                        <strong>Contact: </strong>{{ quotation.client.contact.contactName }}
                     </div>
                     <div>
                         <strong>Email: </strong>{{ quotation.client.contact.email }}
@@ -37,6 +76,9 @@
                     <div>
                         <strong>Phone: </strong>{{ quotation.client.contact.phone }}
                     </div>
+
+                    <div><strong>CreatedBy: </strong>{{ quotation.CreatedBy }}</div>
+                    <div><strong>CreatedDate: </strong>{{ convertTimestampToDate(quotation.CreatedDate) }}</div>
                     <mat-divider></mat-divider>
                     <div class="description-section">
                     <strong>Description </strong>
@@ -78,6 +120,7 @@
                     'light-blue': quotation.Sent,
                     'light-green': quotation.jobId
                   }">
+                  <div fxFlex fxLayout="row wrap" fxLayoutAlign.gt-xs="end center" fxLayoutAlign.xs="center center" fxLayoutGap="10px">
                     <button mat-button (click)="editQuotation(quotation)">Edit</button>
                     <button mat-button color="warn" (click)="deleteQuotation(quotation.id)">Remove</button>
                     <button mat-button *ngIf="!quotation.Sent && quotation.PDFUrl" (click)="sendEmailforQuotation(quotation)">Send</button>
@@ -87,8 +130,10 @@
                     <button mat-button *ngIf="!quotation.PDF" (click)="generatePDFfromQuotation(quotation)">Generate PDF</button>
                     <a *ngIf="quotation.PDF" [href]="quotation.PDFUrl" target="_blank" mat-raised-button color="primary">View</a>
                     <button *ngIf="quotation.PDF" mat-raised-button color="warn" (click)="onDeletePdf(quotation)" style="margin-left: 10px;">Delete</button>
+                </div>
                 </mat-card-actions>
             </mat-card>
+            </div>
         </div>
     </div>
 </div>

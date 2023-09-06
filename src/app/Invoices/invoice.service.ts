@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, collectionData, addDoc, doc, updateDoc, deleteDoc, setDoc, getDoc } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, addDoc, doc, updateDoc, deleteDoc, setDoc, getDoc, limit, orderBy, query } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Invoice } from './invoice.model';
 import { JobService } from '../Jobs/job.service';
@@ -15,7 +15,12 @@ export class InvoiceService {
     }
 
     getInvoices(): Observable<Invoice[]> {
-        return collectionData(this.invoiceCollection, { idField: 'id' }) as Observable<Invoice[]>;
+        const jobReportQuery = query(
+            this.invoiceCollection,
+            orderBy('date', 'desc'), // Order by Date field in ascending order
+            limit(1000) // Limit to 1000 documents
+          );
+        return collectionData(jobReportQuery, { idField: 'id' }) as Observable<Invoice[]>;
     }
 
     async addInvoice(invoice: Invoice): Promise<any> {

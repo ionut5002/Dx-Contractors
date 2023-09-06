@@ -29,6 +29,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+
 
 // Import necessary components
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -50,6 +53,8 @@ import { NgChartsModule } from 'ng2-charts';
 import { ProfileComponent } from './Auth/profile/profile.component';
 import { StockComponent } from './stock/stock.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { OrderByPipe } from './Extras/order-by.pipe';
+import { FilesUploadComponent } from './Extras/files-upload/files-upload.component';
 
 
 @NgModule({
@@ -71,7 +76,9 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     CreateEditJobReportComponent,
     MenuComponent,
     ProfileComponent,
-    StockComponent
+    StockComponent,
+    OrderByPipe,
+    FilesUploadComponent
   ],
   imports: [
     BrowserModule,
@@ -99,6 +106,8 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     MatSidenavModule,
     MatGridListModule,
     MatSnackBarModule,
+    MatSlideToggleModule,
+    MatProgressBarModule,
     ReactiveFormsModule,
     FlexLayoutModule,
     NgChartsModule,

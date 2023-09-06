@@ -6,6 +6,7 @@ import { ClientService } from 'src/app/Clients/client.service';
 import { Client } from 'src/app/Clients/client';
 import { Quotation } from '../quotation.model';
 import { SharedService } from 'src/app/Extras/shared.service';
+import { Timestamp } from 'firebase/firestore';
 
 @Component({
     selector: 'app-create-edit-quotation',
@@ -55,6 +56,15 @@ export class CreateEditQuotationComponent implements OnInit {
         this.sharedService.getClients().subscribe(clients => {
             this.clients = clients;
         });
+        this.sharedService.getUser().subscribe((user: any) => {
+            if (user) {
+              this.quotationForm.patchValue({
+                CreatedBy: user[0].displayName,
+                CreatedDate: Timestamp.now()
+                
+              });
+            }
+          });
     }
 
     initializeForm(): void {
@@ -70,7 +80,9 @@ export class CreateEditQuotationComponent implements OnInit {
             jobId: [''],
             PDF: [false],
             Sent: [false],
-            PDFUrl: ['']
+            PDFUrl: [''],
+            CreatedBy: [''],
+            CreatedDate: ['']
         });
     }
 

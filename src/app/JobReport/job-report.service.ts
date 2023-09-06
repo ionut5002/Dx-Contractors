@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, collectionData, addDoc, doc, updateDoc, deleteDoc, setDoc, getDoc } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, addDoc, doc, updateDoc, deleteDoc, setDoc, getDoc, query, limit, orderBy } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { JobService } from '../Jobs/job.service';
 import { JobReport } from './job-report.model';
@@ -15,7 +15,12 @@ export class JobReportService {
   }
 
   getJobReports(): Observable<JobReport[]> {
-      return collectionData(this.jobReportCollection, { idField: 'id' }) as Observable<JobReport[]>;
+    const jobReportQuery = query(
+        this.jobReportCollection,
+        orderBy('date', 'desc'), // Order by Date field in descending order
+        limit(1000) // Limit to 1000 documents
+      );
+      return collectionData(jobReportQuery, { idField: 'id' }) as Observable<JobReport[]>;
   }
 
   async addJobReport(jobReport: JobReport): Promise<any> {

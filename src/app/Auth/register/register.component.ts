@@ -10,6 +10,7 @@ import { AuthService } from '../auth.service';
 export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   error: unknown;
+  hide = true;
 
   constructor(private fb: FormBuilder, private authService: AuthService) {
     this.registerForm = this.fb.group({

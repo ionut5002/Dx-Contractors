@@ -6,6 +6,7 @@ import { Job } from '../job.model';
 import { ClientService } from 'src/app/Clients/client.service';
 import { Client } from 'src/app/Clients/client';
 import { SharedService } from 'src/app/Extras/shared.service';
+import { Timestamp } from 'firebase/firestore';
 
 @Component({
     selector: 'app-create-edit-job',
@@ -37,17 +38,19 @@ export class CreateEditJobComponent {
                 men: [null, Validators.required],
                 rate: [null, Validators.required],
                 total: [null]
-              }),
+            }),
             logistics: ['', Validators.required],
             mecanicalelectrical: ['', Validators.required],
             quotationId: [''],
             invoiced: ['No'],
             invoices: [[]],
-            jobValue:['', Validators.required],
+            jobValue: ['', Validators.required],
             orderNumber: [''],
             vendorNumber: [''],
             jobReports: [[]],
-            quotationNo: ['N/A']
+            quotationNo: ['N/A'],
+            CreatedBy: [''],
+            CreatedDate: ['']
         });
 
         const navigation = this.router.getCurrentNavigation();
@@ -60,7 +63,7 @@ export class CreateEditJobComponent {
                     ...this.job,
                     location: this.job.location,
                     description: this.job.description,
-                    startDate: this.job.startDate ? new Date((this.job.startDate as any).seconds * 1000)  : null,
+                    startDate: this.job.startDate ? new Date((this.job.startDate as any).seconds * 1000) : null,
                     endDate: this.job.endDate ? new Date((this.job.endDate as any).seconds * 1000) : null,
                     labour: this.job.labour,
                     logistics: this.job.logistics,
@@ -69,44 +72,44 @@ export class CreateEditJobComponent {
                     client: this.job.client.contact.deptName
                 });
                 if (this.job.materials) {
-                  this.job.materials.forEach(material => {
-                      this.materials.push(this.fb.group(material));
-                      this.fb.group(material).valueChanges.subscribe(() => {
-                        this.computeTotals();
+                    this.job.materials.forEach(material => {
+                        this.materials.push(this.fb.group(material));
+                        this.fb.group(material).valueChanges.subscribe(() => {
+                            this.computeTotals();
+                        });
                     });
-                  });
-              }  
+                }
             }
             else if (state.type == "Quote") {
                 this.jobService.getJobById(state.data.id).then(job => {
-            this.job = job
-            if (this.job) {
-                this.isEditMode = true;
-            this.jobForm.patchValue({
-                location: this.job.location,
-                description: this.job.description,
-                startDate: this.job.startDate ? new Date((this.job.startDate as any).seconds * 1000)  : null,
-                endDate: this.job.endDate ? new Date((this.job.endDate as any).seconds * 1000) : null,
-                labour: this.job.labour,
-                logistics: this.job.logistics,
-                mecanicalelectrical: this.job.mecanicalelectrical,
-                quotationId: this.job.quotationId,
-                client: this.job.client.contact.deptName,
-                materials: this.job.materials,
-                quotationNo: this.job.quotationNo
-            });
-            if (this.job.materials) {
-              this.job.materials.forEach(material => {
-                const materialGroup = this.fb.group(material);
-                this.materials.push(materialGroup);
-                materialGroup.valueChanges.subscribe(() => {
-                    this.computeTotals();
+                    this.job = job
+                    if (this.job) {
+                        this.isEditMode = true;
+                        this.jobForm.patchValue({
+                            location: this.job.location,
+                            description: this.job.description,
+                            startDate: this.job.startDate ? new Date((this.job.startDate as any).seconds * 1000) : null,
+                            endDate: this.job.endDate ? new Date((this.job.endDate as any).seconds * 1000) : null,
+                            labour: this.job.labour,
+                            logistics: this.job.logistics,
+                            mecanicalelectrical: this.job.mecanicalelectrical,
+                            quotationId: this.job.quotationId,
+                            client: this.job.client.contact.deptName,
+                            materials: this.job.materials,
+                            quotationNo: this.job.quotationNo
+                        });
+                        if (this.job.materials) {
+                            this.job.materials.forEach(material => {
+                                const materialGroup = this.fb.group(material);
+                                this.materials.push(materialGroup);
+                                materialGroup.valueChanges.subscribe(() => {
+                                    this.computeTotals();
+                                });
+                            });
+                        }
+                    }
                 });
-              });
-          }  
-            }
-                });
-                
+
             }
             else {
                 this.job = state.data;
@@ -116,17 +119,17 @@ export class CreateEditJobComponent {
                     client: this.job.client.contact.deptName
                 });
                 if (this.job.materials) {
-                  this.job.materials.forEach(material => {
-                    const materialGroup = this.fb.group(material);
-                    this.materials.push(materialGroup);
-                    materialGroup.valueChanges.subscribe(() => {
-                        this.computeTotals();
+                    this.job.materials.forEach(material => {
+                        const materialGroup = this.fb.group(material);
+                        this.materials.push(materialGroup);
+                        materialGroup.valueChanges.subscribe(() => {
+                            this.computeTotals();
+                        });
                     });
-                  });
-                  this.computeTotals();
-              }
+                    this.computeTotals();
+                }
             }
-            
+
         }
     }
 
@@ -135,9 +138,18 @@ export class CreateEditJobComponent {
         this.sharedService.getClients().subscribe(clients => {
             this.clients = clients;
         });
+        this.sharedService.getUser().subscribe((user: any) => {
+            if (user) {
+                this.jobForm.patchValue({
+                    CreatedBy: user[0].displayName,
+                    CreatedDate: Timestamp.now()
+
+                });
+            }
+        });
 
         this.jobForm.get('labour.men')!.valueChanges.subscribe(this.calculateTotal.bind(this));
-  this.jobForm.get('labour.rate')!.valueChanges.subscribe(this.calculateTotal.bind(this));
+        this.jobForm.get('labour.rate')!.valueChanges.subscribe(this.calculateTotal.bind(this));
 
     }
 
@@ -164,7 +176,7 @@ export class CreateEditJobComponent {
                     this.jobForm.patchValue({
                         client: { name: client.name, type: client.type, contact: contact }
                     })
-                    
+
                 }
             }
         }
@@ -182,16 +194,16 @@ export class CreateEditJobComponent {
     removeMaterial(index: number): void {
         this.materials.removeAt(index);
         this.computeTotals();
-        
+
     }
     calculateTotal() {
         const men = this.jobForm.get('labour.men')!.value;
         const rate = this.jobForm.get('labour.rate')!.value;
-      
+
         if (men && rate) {
-          const total = men * rate;
-          this.jobForm.get('labour.total')!.setValue(total);
-          this.computeTotals()
+            const total = men * rate;
+            this.jobForm.get('labour.total')!.setValue(total);
+            this.computeTotals()
         }
     }
     computeTotals(): void {
@@ -201,6 +213,6 @@ export class CreateEditJobComponent {
             return acc + (quantity * price);
         }, 0);
         this.jobForm.get('jobValue')?.setValue(totalExclVAT + this.jobForm.get('labour.total')!.value);
-        
+
     }
 }

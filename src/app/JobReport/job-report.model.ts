@@ -28,4 +28,10 @@ export interface JobReport {
     Sent: boolean;
     PDFUrl: string;
     type: string;
+    CreatedBy: string;
+    CreatedDate: Date;
+    files:  Array<{
+        fileName: string;
+        fileURL: string
+      }>
 }

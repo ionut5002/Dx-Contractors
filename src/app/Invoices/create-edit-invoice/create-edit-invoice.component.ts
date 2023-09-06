@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { InvoiceService } from '../invoice.service';
-import { ClientService } from 'src/app/Clients/client.service';
 import { Client } from 'src/app/Clients/client';
 import { Invoice } from '../invoice.model';
 import { PDFGeneratorService } from 'src/app/Extras/pdf-generator.service';
 import { SharedService } from 'src/app/Extras/shared.service';
+import { Timestamp } from 'firebase/firestore';
 
 @Component({
   selector: 'app-create-edit-invoice',
@@ -23,7 +23,6 @@ export class CreateEditInvoiceComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private invoiceService: InvoiceService,
-    private clientService: ClientService,
     private pdfService: PDFGeneratorService,
     private sharedService: SharedService
   ) {
@@ -76,6 +75,15 @@ export class CreateEditInvoiceComponent implements OnInit {
     this.sharedService.getClients().subscribe(clients => {
       this.clients = clients;
     });
+    this.sharedService.getUser().subscribe((user: any) => {
+      if (user) {
+        this.invoiceForm.patchValue({
+          CreatedBy: user[0].displayName,
+          CreatedDate: Timestamp.now()
+          
+        });
+      }
+    });
   }
 
   initializeForm(): void {
@@ -94,7 +102,9 @@ export class CreateEditInvoiceComponent implements OnInit {
       orderNumber: [''],
       vendorNumber: [''],
       type: ['', Validators.required],
-      Paid: [false]
+      Paid: [false],
+      CreatedBy: [''],
+      CreatedDate: ['']
     });
   }
 
@@ -153,4 +163,6 @@ export class CreateEditInvoiceComponent implements OnInit {
     this.items.removeAt(index);
     this.computeTotals();
   }
+
+  
 }

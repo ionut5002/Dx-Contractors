@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';
-import { Firestore, collection, addDoc, collectionData } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, collectionData, query, where } from '@angular/fire/firestore';
 import { User } from './user';
 import { Router } from '@angular/router';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root'
@@ -89,4 +90,20 @@ export class AuthService {
   getUsers(): Observable<User[]> {
     return collectionData(collection(this.firestore, 'users'), { idField: 'id' }) as Observable<User[]>;
   }
+
+  getUser(): Observable<User[]> {
+    const uid = this.getCurrentUserUid();
+    if (!uid) {
+      // Handle the case where the UID is not available
+      return of([]); // of is imported from 'rxjs'
+    }
+    
+    const userQuery = query(
+      collection(this.firestore, 'users'),
+      where('uid', '==', uid)
+    );
+  
+    return collectionData(userQuery, { idField: 'id' }) as Observable<User[]>;
+  }
+  
 }

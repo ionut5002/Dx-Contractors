@@ -8,6 +8,7 @@ import { ConfirmationDialogComponent } from 'src/app/Extras/confirmation-dialog/
 import { PDFGeneratorService } from 'src/app/Extras/pdf-generator.service';
 import { SharedService } from 'src/app/Extras/shared.service';
 import { EmailService } from 'src/app/Extras/email.service';
+import { Client } from 'src/app/Clients/client';
 
 @Component({
     selector: 'app-view-quotations',
@@ -16,6 +17,10 @@ import { EmailService } from 'src/app/Extras/email.service';
 })
 export class ViewQuotationsComponent implements OnInit {
     quotations: Quotation[] = [];
+    locationFilter: string = '';
+    selectedClientName?: string;
+    isCommercial: boolean = true;
+    clients: Client[] = []
 
     constructor(private quotationService: QuotationService, 
         private router: Router, 
@@ -28,6 +33,9 @@ export class ViewQuotationsComponent implements OnInit {
         this.sharedService.getQuotations().subscribe(data => {
             this.quotations = data;
         });
+        this.sharedService.getClients().subscribe(data => {
+            this.clients = data
+        })
     }
 
     editQuotation(quotation: Quotation): void {
@@ -96,5 +104,25 @@ export class ViewQuotationsComponent implements OnInit {
     resendEmailforQuotation(quotation: Quotation): void {
         this.emailService.resendQuotationEmail(quotation).subscribe(res =>{
         })
+    }
+
+    filterQuotations(quotation: Quotation) {
+        let locationMatch = true;
+        let clientNameMatch = true;
+        let clientTypeMatch = true;
+
+        if (this.locationFilter) {
+            locationMatch = quotation.location.includes(this.locationFilter);
+        }
+
+        if (this.selectedClientName) {
+            clientNameMatch = quotation.client.name === this.selectedClientName;
+        }
+
+        if (this.isCommercial !== null) {
+            clientTypeMatch = this.isCommercial ? quotation.client.type === 'Commercial' : quotation.client.type === 'Private';
+        }
+
+        return locationMatch && clientNameMatch && clientTypeMatch;
     }
 }

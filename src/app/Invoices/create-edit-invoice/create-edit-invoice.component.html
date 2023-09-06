@@ -115,7 +115,8 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <button mat-raised-button color="primary" type="submit">Save</button>
+                    <mat-error *ngIf="items.length <= 0">Add Items</mat-error>
+                    <button mat-raised-button color="primary" type="submit" [disabled]="invoiceForm.invalid">Save</button>
                     <button mat-raised-button color="warn" type="button" [routerLink]="['/view-invoices']" style="margin-left: 20px;">Cancel</button>
                 </div>
             </div>
