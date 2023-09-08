@@ -2,7 +2,7 @@
   <h1 mat-dialog-title>Upload Files</h1>
   <div class="file-input-wrapper">
     <button mat-raised-button color="primary" (click)="fileInput.click()" [disabled]="!uploadProgress$">Choose File</button>
-    <input hidden #fileInput type="file" (change)="handleFileInput($event)" multiple>
+    <input hidden #fileInput type="file" (change)="handleFileInput($event)" multiple accept="image/*">
   </div>
 </mat-dialog-content>
 

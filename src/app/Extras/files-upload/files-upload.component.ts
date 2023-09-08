@@ -36,6 +36,8 @@ export class FilesUploadComponent {
     }
   }
 
+
+  
   onConfirm(): void {
     if (this.isUploadComplete) {
       this.dialogRef.close(this.uploadedFiles); // data going back to parent

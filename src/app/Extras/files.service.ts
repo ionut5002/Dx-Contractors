@@ -15,7 +15,7 @@ export class FilesService {
 
     for (let i = 0; i < files.length; i++) {
       const file = files.item(i);
-      if (file) {
+      if (file && file.type.startsWith('image/')) {
         const randomString = Math.random().toString(36).substring(2, 8);
         const filePath =  `${type}/${randomString}_${file.name}`;
         const storageRef = ref(this.storage, filePath);
