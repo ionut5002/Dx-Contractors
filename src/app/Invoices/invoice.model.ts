@@ -31,4 +31,8 @@ export interface Invoice {
     type: string;
     CreatedBy: string;
     CreatedDate: Date;
+    files:  Array<{
+        fileName: string;
+        fileURL: string
+      }>
 }

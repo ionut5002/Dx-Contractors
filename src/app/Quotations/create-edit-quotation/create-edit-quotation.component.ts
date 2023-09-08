@@ -7,6 +7,10 @@ import { Client } from 'src/app/Clients/client';
 import { Quotation } from '../quotation.model';
 import { SharedService } from 'src/app/Extras/shared.service';
 import { Timestamp } from 'firebase/firestore';
+import { MatDialog } from '@angular/material/dialog';
+import { FilesService } from 'src/app/Extras/files.service';
+import { ConfirmationDialogComponent } from 'src/app/Extras/confirmation-dialog/confirmation-dialog.component';
+import { FilesUploadComponent } from 'src/app/Extras/files-upload/files-upload.component';
 
 @Component({
     selector: 'app-create-edit-quotation',
@@ -17,6 +21,11 @@ export class CreateEditQuotationComponent implements OnInit {
     quotationForm!: FormGroup;
     isEditMode = false;
     clients: Client[] = [];
+    files: Array<{
+        fileName: string;
+        fileURL: string
+      }> = []
+    
 
     constructor(
         private fb: FormBuilder,
@@ -24,7 +33,9 @@ export class CreateEditQuotationComponent implements OnInit {
         private router: Router,
         private quotationService: QuotationService,
         private clientService: ClientService,
-        private sharedService: SharedService
+        private sharedService: SharedService,
+        public dialog: MatDialog,
+        private filesService: FilesService
     ) {
         this.initializeForm();
         const navigation = this.router.getCurrentNavigation();
@@ -48,6 +59,7 @@ export class CreateEditQuotationComponent implements OnInit {
                     this.computeTotals();
                 });
             });
+            this.files = quotation.files
             this.computeTotals();
         }
     }
@@ -82,7 +94,8 @@ export class CreateEditQuotationComponent implements OnInit {
             Sent: [false],
             PDFUrl: [''],
             CreatedBy: [''],
-            CreatedDate: ['']
+            CreatedDate: [''],
+            files: []
         });
     }
 
@@ -155,4 +168,33 @@ export class CreateEditQuotationComponent implements OnInit {
         this.materials.removeAt(index);
         this.computeTotals();
     }
+    openUploadDialog(): void {
+        const dialogRef = this.dialog.open(FilesUploadComponent, {
+          data: { type: 'JobReportFiles' }
+        });
+    
+        dialogRef.afterClosed().subscribe(result => {
+          result.forEach((element: any) => {
+            this.files.push(element)
+          });
+        });
+      }
+    
+      async onDeletePdf(fileName: string, type: 'JobReportFiles'): Promise<void> {
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent);
+        dialogRef.afterClosed().subscribe(async result => {
+          if (result === true) {
+            try {
+              await this.filesService.removeFile(fileName, type);
+              const index = this.files.findIndex(file => file.fileName === fileName);
+              if (index > -1) {
+                this.files.splice(index, 1);
+              }
+              console.log('File removed successfully');
+            } catch (error) {
+              console.error('Error removing file:', error);
+            }
+          }
+        });
+      }
 }

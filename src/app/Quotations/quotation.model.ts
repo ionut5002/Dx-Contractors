@@ -30,4 +30,8 @@ export interface Quotation {
     PDFUrl: string;
     CreatedBy: string;
     CreatedDate: Date;
+    files:  Array<{
+        fileName: string;
+        fileURL: string
+      }>
 }

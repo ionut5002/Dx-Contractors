@@ -11,6 +11,8 @@ import { InvoiceService } from '../Invoices/invoice.service';
 import { Invoice } from '../Invoices/invoice.model';
 import { JobReport } from '../JobReport/job-report.model';
 import { JobReportService } from '../JobReport/job-report.service';
+import { HttpClient } from '@angular/common/http';
+
 
 (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 
@@ -19,12 +21,21 @@ import { JobReportService } from '../JobReport/job-report.service';
   providedIn: 'root'
 })
 export class PDFGeneratorService {
-
-  constructor(private storage: Storage, private quotationService: QuotationService, private firestore: Firestore, private invoiceService: InvoiceService, private jobReportService: JobReportService,) { }
-
+  private firebaseFunctionUrl = 'https://us-central1-dx-contractors.cloudfunctions.net/';
 
 
-  generateQuotationPdf(quotation: Quotation) {
+  constructor(private storage: Storage, 
+    private quotationService: QuotationService, 
+    private firestore: Firestore, 
+    private invoiceService: InvoiceService, 
+    private jobReportService: JobReportService,
+    private http: HttpClient) { }
+
+
+    
+  async generateQuotationPdf(quotation: Quotation) {
+    const imageDataUrls = await Promise.all(quotation.files.map(file => this.fetchImageAsDataUrl(file.fileURL)));
+
     const vatRate = 13.5; // in percentage
     const vatValue = quotation.totalInclVAT - quotation.totalExclVAT;
 
@@ -114,6 +125,8 @@ export class PDFGeneratorService {
             vLineWidth: () => 1
           }
         },
+      
+
         {
           ul: [
               "Our policy asks of our clients for an upfront payment of 30% within the first 3 days of starting a job, 30% half way through the job and 40% at the end(or remaining, if extras), payable within 21 days.",
@@ -130,6 +143,7 @@ export class PDFGeneratorService {
               "Certificate of guarantee to be provided by principal contractor upon completion of works"
           ]
       },
+      ...this.getPhotosSection(imageDataUrls),
         {
           text: '',
           pageBreak: 'after'
@@ -199,6 +213,12 @@ export class PDFGeneratorService {
         bank: {
           fontSize: 16,
           bold: true
+        },
+        photosHeader: {
+          fontSize: 18,
+          bold: true,
+          alignment: 'center',
+          margin: [0, 20, 0, 10] // Adjust as needed for spacing
         }
       }
     };
@@ -233,7 +253,8 @@ export class PDFGeneratorService {
     });
   }
 
-  generateInvoicePdf(invoice: Invoice) {
+  async generateInvoicePdf(invoice: Invoice) {
+    const imageDataUrls = await Promise.all(invoice.files.map(file => this.fetchImageAsDataUrl(file.fileURL)));
     const vatRate = 13.5; 
     const vatValue = invoice.totalInclVAT - invoice.totalExclVAT;
 
@@ -318,6 +339,7 @@ export class PDFGeneratorService {
               "Certificate of guarantee to be provided by principal contractor upon completion of works"
           ]
       },
+      ...this.getPhotosSection(imageDataUrls),
         {
           text: '',
           pageBreak: 'after'
@@ -380,6 +402,12 @@ export class PDFGeneratorService {
         bank: {
           fontSize: 16,
           bold: true
+        },
+        photosHeader: {
+          fontSize: 18,
+          bold: true,
+          alignment: 'center',
+          margin: [0, 20, 0, 10] // Adjust as needed for spacing
         }
       }
     };
@@ -451,7 +479,8 @@ export class PDFGeneratorService {
   }
   }
 
-  generateJobReportPdf(jobReport: JobReport) {
+  async generateJobReportPdf(jobReport: JobReport) {
+    const imageDataUrls = await Promise.all(jobReport.files.map(file => this.fetchImageAsDataUrl(file.fileURL)));
     const vatRate = 13.5; 
     const vatValue = jobReport.totalInclVAT - jobReport.totalExclVAT;
 
@@ -537,6 +566,7 @@ export class PDFGeneratorService {
               "Certificate of guarantee to be provided by principal contractor upon completion of works"
           ]
       },
+      ...this.getPhotosSection(imageDataUrls),
         {
           text: '',
           pageBreak: 'after'
@@ -599,6 +629,12 @@ export class PDFGeneratorService {
         bank: {
           fontSize: 16,
           bold: true
+        },
+        photosHeader: {
+          fontSize: 18,
+          bold: true,
+          alignment: 'center',
+          margin: [0, 20, 0, 10] // Adjust as needed for spacing
         }
       }
     };
@@ -667,6 +703,93 @@ export class PDFGeneratorService {
   }
   }
   }
+
+
+  
+  async fetchImageAsDataUrl(url: string): Promise<string> {
+    const blob = await this.http.get(url, { responseType: 'blob' }).toPromise();
+    
+    if (!blob) {
+        throw new Error('Failed to fetch the image or image is undefined.');
+    }
+
+    return this.convertBlobToDataUrl(blob);
+}
+
+  convertBlobToDataUrl(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+  
+  generateImageRows(imageUrls: string[]): any[] {
+    const rows = [];
+    for (let i = 0; i < imageUrls.length; i += 4) {
+      const row = [];
+      for (let j = 0; j < 3; j++) {
+        if (imageUrls[i + j]) {
+          row.push({
+            image: imageUrls[i + j],
+            width: 170, // Adjust width as needed
+            margin: [j === 0 ? 0 : 5, 5, j === 2 ? 0 : 5, 5] // Adjust space between images
+          });
+        } else {
+          row.push({});
+        }
+      }
+      rows.push(row);
+    }
+    return rows;
+}
+
+getPhotosSection(imageDataUrls: string[]): any {
+  if (imageDataUrls.length === 0) {
+      return [];
+  }
+
+  return [
+      {
+          text: '',
+          pageBreak: 'after'
+      },
+      {
+          stack: [
+              {
+                  text: 'Photos',
+                  style: 'photosHeader',
+                  margin: [0, 0, 0, 10] // Adjust as needed for spacing below the title
+              },
+              {
+                  table: {
+                      widths: ['*'],
+                      body: [
+                          [
+                              {
+                                  stack: this.generateImageRows(imageDataUrls).map(row => {
+                                      return {
+                                          columns: row
+                                      };
+                                  }),
+                                  border: [true, true, true, true], // This will add border to the cell
+                                  margin: [5, 5, 5, 5] // Margin to ensure images are inside the border
+                              }
+                          ]
+                      ]
+                  },
+                  layout: {
+                      hLineWidth: () => 1,
+                      vLineWidth: () => 1,
+                      hLineColor: () => 'black',
+                      vLineColor: () => 'black'
+                  }
+              }
+          ]
+      }
+  ];
+}
 
 
 }

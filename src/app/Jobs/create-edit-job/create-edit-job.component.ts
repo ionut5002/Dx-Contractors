@@ -7,6 +7,10 @@ import { ClientService } from 'src/app/Clients/client.service';
 import { Client } from 'src/app/Clients/client';
 import { SharedService } from 'src/app/Extras/shared.service';
 import { Timestamp } from 'firebase/firestore';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from 'src/app/Extras/confirmation-dialog/confirmation-dialog.component';
+import { FilesUploadComponent } from 'src/app/Extras/files-upload/files-upload.component';
+import { FilesService } from 'src/app/Extras/files.service';
 
 @Component({
     selector: 'app-create-edit-job',
@@ -18,6 +22,10 @@ export class CreateEditJobComponent {
     isEditMode = false;
     job: Job | null = null;
     clients: Client[] = [];
+    files: Array<{
+        fileName: string;
+        fileURL: string
+      }> = []
 
     constructor(
         private fb: FormBuilder,
@@ -25,7 +33,9 @@ export class CreateEditJobComponent {
         private router: Router,
         private jobService: JobService,
         private clientService: ClientService,
-        private sharedService: SharedService
+        private sharedService: SharedService,
+        public dialog: MatDialog,
+    private filesService: FilesService
     ) {
         this.jobForm = this.fb.group({
             location: ['', Validators.required],
@@ -71,6 +81,7 @@ export class CreateEditJobComponent {
                     quotationId: this.job.quotationId,
                     client: this.job.client.contact.deptName
                 });
+                this.files = this.job.files
                 if (this.job.materials) {
                     this.job.materials.forEach(material => {
                         this.materials.push(this.fb.group(material));
@@ -98,6 +109,7 @@ export class CreateEditJobComponent {
                             materials: this.job.materials,
                             quotationNo: this.job.quotationNo
                         });
+                        this.files = this.job.files
                         if (this.job.materials) {
                             this.job.materials.forEach(material => {
                                 const materialGroup = this.fb.group(material);
@@ -118,6 +130,7 @@ export class CreateEditJobComponent {
                     quotationId: this.job.quotationId,
                     client: this.job.client.contact.deptName
                 });
+                this.files = this.job.files
                 if (this.job.materials) {
                     this.job.materials.forEach(material => {
                         const materialGroup = this.fb.group(material);
@@ -215,4 +228,34 @@ export class CreateEditJobComponent {
         this.jobForm.get('jobValue')?.setValue(totalExclVAT + this.jobForm.get('labour.total')!.value);
 
     }
+
+    openUploadDialog(): void {
+        const dialogRef = this.dialog.open(FilesUploadComponent, {
+          data: { type: 'JobReportFiles' }
+        });
+    
+        dialogRef.afterClosed().subscribe(result => {
+          result.forEach((element: any) => {
+            this.files.push(element)
+          });
+        });
+      }
+    
+      async onDeletePdf(fileName: string, type: 'JobReportFiles'): Promise<void> {
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent);
+        dialogRef.afterClosed().subscribe(async result => {
+          if (result === true) {
+            try {
+              await this.filesService.removeFile(fileName, type);
+              const index = this.files.findIndex(file => file.fileName === fileName);
+              if (index > -1) {
+                this.files.splice(index, 1);
+              }
+              console.log('File removed successfully');
+            } catch (error) {
+              console.error('Error removing file:', error);
+            }
+          }
+        });
+      }
 }

@@ -41,7 +41,8 @@
                 </div>
             </div>
             <div class="description-section p-3 rounded">
-                <button mat-raised-button color="primary" type="button" (click)="addDescription()">Add Description</button>
+                <button mat-raised-button color="primary" type="button" (click)="addDescription()">Add
+                    Description</button>
                 <div formArrayName="descriptions" *ngFor="let descriptionCtrl of descriptions.controls; let i = index">
                     <div [formGroupName]="i">
                         <mat-form-field class="w-50">
@@ -94,8 +95,25 @@
                     </mat-form-field>
                 </div>
             </div>
-            <button mat-raised-button color="primary" type="submit" [disabled]="quotationForm.invalid">Save</button>
-            <button mat-raised-button color="warn" type="button" [routerLink]="['/view-quotations']" style="margin-left: 20px;">Cancel</button>
+
+            <button mat-raised-button type="button" (click)="openUploadDialog()">Upload files</button>
+            <mat-list>
+                <mat-list-item *ngFor="let file of files">
+                    <a href="{{ file.fileURL }}" target="_blank">{{ file.fileName }}</a>
+                    <button mat-icon-button type="button" (click)="onDeletePdf(file.fileName, 'JobReportFiles')">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </mat-list-item>
+            </mat-list>
+            <div class="row">
+                <div class="col-12">
+
+                    <button mat-raised-button color="primary" type="submit"
+                        [disabled]="quotationForm.invalid">Save</button>
+                    <button mat-raised-button color="warn" type="button" [routerLink]="['/view-quotations']"
+                        style="margin-left: 20px;">Cancel</button>
+                </div>
+            </div>
         </form>
     </mat-card-content>
 </mat-card>
